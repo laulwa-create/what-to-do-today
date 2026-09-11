@@ -81,6 +81,28 @@ function saveCafes(list){
 }
 
 /* ==========================================================================
+   BARS (sidebar chooser, grouped by area)
+   ========================================================================== */
+const BAR_AREAS = ["West End", "Southside", "City Centre", "East End", "North", "Other"];
+const BAR_STORE_KEY = "shallwe_bars_v1";
+
+// A small starter list — add the rest (and their locations) via manage.html.
+const DEFAULT_BARS = [
+  {id:1, name:"Tapa Coffee", area:"West End", location:null},
+];
+
+function loadBars(){
+  try{
+    const raw = localStorage.getItem(BAR_STORE_KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return DEFAULT_BARS.slice();
+}
+function saveBars(list){
+  try{ localStorage.setItem(BAR_STORE_KEY, JSON.stringify(list)); }catch(e){}
+}
+
+/* ==========================================================================
    LOCATION SEARCH (geocoding via OpenStreetMap's Nominatim)
    Free, no API key. Please be a good citizen of the free service — we
    only search on an explicit "find" click (not on every keystroke).
