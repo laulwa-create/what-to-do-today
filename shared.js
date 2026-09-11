@@ -18,7 +18,7 @@ const MARKER_HEX = '#B497DD';
 /* ---------- starter activities ---------- */
 const DEFAULT_ACTIVITIES = [
   {id: 3, name: "Botanic Gardens wander", rain: "no", cold: "either", moods: ["day-trip","cozy"], company: ["together","solo"], location: {lat: 55.8797, lng: -4.2911, label: "Botanic Gardens"}, options: []},
-  {id: 4, name: "Kelvingrove Art Gallery", rain: "yes", cold": "either", moods: ["day-trip","fancy"], company: ["together","friends","solo"], location: {lat: 55.8687, lng: -4.2907, label: "Kelvingrove Art Gallery"}, options: []},
+  {id: 4, name: "Kelvingrove Art Gallery", rain: "yes", cold: "either", moods: ["day-trip","fancy"], company: ["together","friends","solo"], location: {lat: 55.8687, lng: -4.2907, label: "Kelvingrove Art Gallery"}, options: []},
   {id: 5, name: "Picnic in Kelvingrove Park", rain: "no", cold: "no", moods: ["day-trip"], company: ["together","friends"], location: {lat: 55.8687, lng: -4.2842, label: "Kelvingrove Park"}, options: []},
   {id:6, name:"Cosy café & a good book", rain:"yes", cold:"either", moods:["night-in","cozy","day-trip"], company:["solo","together"], location:null, options:[]},
   {id:7, name:"Karaoke night", rain:"either", cold:"either", moods:["night-out"], company:["together","friends"], location:null, options:[]},
