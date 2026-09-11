@@ -204,7 +204,7 @@ textarea{ resize: vertical; min-height: 56px; }
 /* ---------- cafe sidebar ---------- */
 .cafe-toggle{
   position: fixed;
-  top: 50%;
+  top: 32%;
   right: 0;
   transform: translateY(-50%);
   z-index: 45;
@@ -220,6 +220,12 @@ textarea{ resize: vertical; min-height: 56px; }
   box-shadow: -4px 0 12px rgba(90,110,90,0.15);
 }
 .cafe-toggle:hover{ background: var(--purple-deep); }
+
+.restaurant-toggle{
+  top: 68%;
+  background: var(--purple-deep);
+}
+.restaurant-toggle:hover{ background: var(--purple); }
 
 .cafe-sidebar{
   position: fixed;
