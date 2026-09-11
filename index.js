@@ -166,8 +166,28 @@ function renderCafeSidebar(){
 renderCafeSidebar();
 
 const cafeSidebar = document.getElementById('cafeSidebar');
-document.getElementById('cafeSidebarToggle').addEventListener('click', ()=> cafeSidebar.classList.add('open'));
+document.getElementById('cafeSidebarToggle').addEventListener('click', ()=>{
+  restaurantSidebar.classList.remove('open'); // shares the right edge — avoid stacking
+  cafeSidebar.classList.add('open');
+});
 document.getElementById('cafeSidebarClose').addEventListener('click', ()=> cafeSidebar.classList.remove('open'));
+
+/* ==========================================================================
+   RESTAURANT SIDEBAR (same pattern as cafes/bars, shares the right edge)
+   ========================================================================== */
+let restaurants = loadRestaurants();
+
+function renderRestaurantSidebar(){
+  renderGroupedSidebar(restaurants, 'restaurantGroups', RESTAURANT_AREAS);
+}
+renderRestaurantSidebar();
+
+const restaurantSidebar = document.getElementById('restaurantSidebar');
+document.getElementById('restaurantSidebarToggle').addEventListener('click', ()=>{
+  cafeSidebar.classList.remove('open'); // shares the right edge — avoid stacking
+  restaurantSidebar.classList.add('open');
+});
+document.getElementById('restaurantSidebarClose').addEventListener('click', ()=> restaurantSidebar.classList.remove('open'));
 
 /* ==========================================================================
    BAR SIDEBAR (same pattern as cafes)
