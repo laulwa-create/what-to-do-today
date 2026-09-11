@@ -106,6 +106,31 @@ function saveBars(list){
 }
 
 /* ==========================================================================
+   RESTAURANTS (third sidebar chooser, grouped by area)
+   ========================================================================== */
+const RESTAURANT_AREAS = ["West End", "Southside", "City Centre", "East End", "North", "Other"];
+const RESTAURANT_STORE_KEY = "shallwe_restaurants_v1";
+
+const DEFAULT_RESTAURANTS = [
+  {id:1, name:"Ubiquitous Chip", area:"West End", location:null},
+  {id:2, name:"The Finnieston", area:"West End", location:null},
+  {id:3, name:"Cail Bruich", area:"West End", location:null},
+  {id:4, name:"Julie's Kopitiam", area:"Southside", location:null},
+  {id:5, name:"The Gannet", area:"City Centre", location:null}
+];
+
+function loadRestaurants(){
+  try{
+    const raw = localStorage.getItem(RESTAURANT_STORE_KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return DEFAULT_RESTAURANTS.slice();
+}
+function saveRestaurants(list){
+  try{ localStorage.setItem(RESTAURANT_STORE_KEY, JSON.stringify(list)); }catch(e){}
+}
+
+/* ==========================================================================
    LOCATION SEARCH (geocoding via OpenStreetMap's Nominatim)
    Free, no API key. Please be a good citizen of the free service — we
    only search on an explicit "find" click (not on every keystroke).
