@@ -272,6 +272,95 @@ document.getElementById('saveCafeBtn').addEventListener('click', ()=>{
 });
 
 /* ==========================================================================
+   RESTAURANTS (same pattern as cafes/bars)
+   ========================================================================== */
+let restaurants = loadRestaurants();
+let pendingRestaurantLocation = null;
+
+function renderRestaurantAreaChips(){
+  const row = document.getElementById('newRestaurantArea');
+  row.innerHTML = RESTAURANT_AREAS.map((a,i)=>
+    `<button class="chip${i===0?' active':''}" data-value="${escapeHtml(a)}">${escapeHtml(a)}</button>`
+  ).join('');
+  row.querySelectorAll('.chip').forEach(chip=>{
+    chip.addEventListener('click', ()=>{
+      row.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+      chip.classList.add('active');
+    });
+  });
+}
+renderRestaurantAreaChips();
+
+function renderRestaurantList(){
+  const listEl = document.getElementById('restaurantList');
+  listEl.innerHTML = restaurants.map(r=>{
+    const locTag = r.location ? `<span class="tag loc">📍 ${escapeHtml(r.location.label)}</span>` : `<span class="tag">no location yet</span>`;
+    return `<div class="board-card" data-id="${r.id}">
+      <button class="remove-btn" data-remove-restaurant="${r.id}" title="remove">✕</button>
+      <div class="name">${escapeHtml(r.name)}</div>
+      <div class="tags"><span class="tag">${escapeHtml(r.area)}</span>${locTag}</div>
+    </div>`;
+  }).join('');
+
+  listEl.querySelectorAll('[data-remove-restaurant]').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      const id = Number(btn.dataset.removeRestaurant);
+      restaurants = restaurants.filter(r=>r.id !== id);
+      saveRestaurants(restaurants);
+      renderRestaurantList();
+    });
+  });
+}
+renderRestaurantList();
+
+document.getElementById('restaurantLocationSearchBtn').addEventListener('click', async ()=>{
+  const query = document.getElementById('restaurantLocationQuery').value.trim();
+  const resultsEl = document.getElementById('restaurantLocationResults');
+  if(!query) return;
+  resultsEl.innerHTML = `<div class="location-result-item">searching…</div>`;
+  try{
+    const results = await searchGlasgowPlace(query);
+    if(!results.length){
+      resultsEl.innerHTML = `<div class="location-result-item">no matches — try a different search</div>`;
+      return;
+    }
+    resultsEl.innerHTML = results.map((r, i)=>
+      `<button type="button" class="location-result-item" data-index="${i}">${escapeHtml(r.display_name)}</button>`
+    ).join('');
+    resultsEl.querySelectorAll('[data-index]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const r = results[Number(btn.dataset.index)];
+        pendingRestaurantLocation = { lat: parseFloat(r.lat), lng: parseFloat(r.lon), label: r.display_name.split(',')[0] };
+        document.getElementById('restaurantLocationSelected').textContent = `📍 selected: ${pendingRestaurantLocation.label}`;
+        resultsEl.innerHTML = '';
+      });
+    });
+  }catch(e){
+    resultsEl.innerHTML = `<div class="location-result-item">search failed — check your connection and try again</div>`;
+  }
+});
+
+document.getElementById('saveRestaurantBtn').addEventListener('click', ()=>{
+  const name = document.getElementById('newRestaurantName').value.trim();
+  if(!name){ document.getElementById('newRestaurantName').focus(); return; }
+  const area = document.querySelector('#newRestaurantArea .chip.active').dataset.value;
+  const newId = restaurants.length ? Math.max(...restaurants.map(r=>r.id))+1 : 1;
+
+  restaurants.push({ id:newId, name, area, location: pendingRestaurantLocation });
+  saveRestaurants(restaurants);
+  renderRestaurantList();
+
+  document.getElementById('newRestaurantName').value = '';
+  document.getElementById('restaurantLocationQuery').value = '';
+  document.getElementById('restaurantLocationResults').innerHTML = '';
+  document.getElementById('restaurantLocationSelected').textContent = '';
+  pendingRestaurantLocation = null;
+  document.querySelectorAll('#newRestaurantArea .chip').forEach(c=>c.classList.remove('active'));
+  document.querySelector('#newRestaurantArea .chip').classList.add('active');
+});
+
+/* ==========================================================================
    BARS (same pattern as cafes)
    ========================================================================== */
 let bars = loadBars();
@@ -404,6 +493,8 @@ document.getElementById('generateExportBtn').addEventListener('click', ()=>{
     `const DEFAULT_CAFES = ${JSON.stringify(cafes, null, 2)};`,
     '',
     `const DEFAULT_BARS = ${JSON.stringify(bars, null, 2)};`,
+    '',
+     `const DEFAULT_RESTAURANTS = ${JSON.stringify(restaurants, null, 2)};`,
     '',
     `const DEFAULT_PLAYLIST_URL = ${JSON.stringify(playlistToExport)};`
   ].join('\n');
