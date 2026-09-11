@@ -1,4 +1,4 @@
-
+ 
 
 
 /* ==========================================================================
@@ -7,14 +7,14 @@
    stay in sync on the same data. Nothing in this file renders anything
    on screen — that's index.js and manage.js.
    ========================================================================== */
-
+ 
 const CITY_CENTER = [55.8642, -4.2518]; // Glasgow city centre
 const CITY_ZOOM = 12;
-
+ 
 // Matches --purple in style.css. Map libraries need a real color string
 // (not a CSS variable) — if you change --purple, update this too.
 const MARKER_HEX = '#B497DD';
-
+ 
 /* ---------- starter activities ---------- */
 const DEFAULT_ACTIVITIES = [
   {id: 3, name: "Botanic Gardens wander", rain: "no", cold: "either", moods: ["day-trip","cozy"], company: ["together","solo"], location: {lat: 55.8797, lng: -4.2911, label: "Botanic Gardens"}, options: []},
@@ -105,16 +105,16 @@ const DEFAULT_ACTIVITIES = [
     {name:"Choose!", location:null}
   ]}
 ];
-
+ 
 /* ---------- storage keys ---------- */
 const STORE_KEY = "shallwe_activities_glasgow_v1";
 const PLAYLIST_KEY = "shallwe_playlist_v1";
-
+ 
 // To make a playlist show up for anyone who opens the site (not just
 // whichever browser used manage.html to set it), paste the link here.
 // Leave it as "" to only rely on manage.html's saved link instead.
-const DEFAULT_PLAYLIST_URL = "";
-
+const DEFAULT_PLAYLIST_URL_UNUSED = "";
+ 
 function loadActivities(){
   try{
     const raw = localStorage.getItem(STORE_KEY);
@@ -125,20 +125,19 @@ function loadActivities(){
 function saveActivities(list){
   try{ localStorage.setItem(STORE_KEY, JSON.stringify(list)); }catch(e){}
 }
-
+ 
 function escapeHtml(str){
   const d = document.createElement('div');
   d.textContent = str == null ? '' : str;
   return d.innerHTML;
 }
-
+ 
 /* ==========================================================================
    CAFES (sidebar chooser, grouped by area)
    ========================================================================== */
 const CAFE_AREAS = ["West End", "Southside", "City Centre", "East End", "North", "Other"];
 const CAFE_STORE_KEY = "shallwe_cafes_v1";
-
-// A small starter list — add the rest (and their locations) via manage.html.
+ 
 const DEFAULT_CAFES = [
   {id:7, name:"Laboratorio Espresso", area:"City Centre", location:{lat:55.8631864, lng:-4.2547772, label:"Laboratorio Espresso"}},
   {id:8, name:"Papercup Coffee Co.", area:"West End", location:{lat:55.8639197, lng:-4.2987295, label:"Papercup Coffee Roasters"}},
@@ -174,8 +173,9 @@ const DEFAULT_CAFES = [
   {id:38, name:"Sister Midnight", area:"City Centre", location:null},
   {id:39, name:"Jeju Baked Goods", area:"Southside", location:{lat:55.8367271, lng:-4.2645432, label:"Jeju Baked Goods"}},
   {id:40, name:"Maple Leaf Bakery", area:"West End", location:null},
+  {id:41, name:"Black Sheep Coffee", area:"West End", location:{lat:55.8223288, lng:-4.3415865, label:"Black Sheep Coffee"}}
 ];
-
+ 
 function loadCafes(){
   try{
     const raw = localStorage.getItem(CAFE_STORE_KEY);
@@ -186,13 +186,13 @@ function loadCafes(){
 function saveCafes(list){
   try{ localStorage.setItem(CAFE_STORE_KEY, JSON.stringify(list)); }catch(e){}
 }
-
+ 
 /* ==========================================================================
    BARS (second sidebar chooser, grouped by area)
    ========================================================================== */
 const BAR_AREAS = ["West End", "Southside", "City Centre", "East End", "North", "Other"];
 const BAR_STORE_KEY = "shallwe_bars_v1";
-
+ 
 const DEFAULT_BARS = [
   {id:6, name:"The Sparkle Horse", area:"West End", location:{lat:55.8714022, lng:-4.3003587, label:"The Sparkle Horse"}},
   {id:7, name:"Naked Soup", area:"West End", location:{lat:55.8771794, lng:-4.2888052, label:"Naked Soup"}},
@@ -207,7 +207,7 @@ const DEFAULT_BARS = [
   {id:16, name:"Westside Tavern", area:"West End", location:null},
   {id:17, name:"The Park Bar", area:"West End", location:{lat:55.8657894, lng:-4.2871561, label:"The Park Bar"}}
 ];
-
+ 
 function loadBars(){
   try{
     const raw = localStorage.getItem(BAR_STORE_KEY);
@@ -218,13 +218,13 @@ function loadBars(){
 function saveBars(list){
   try{ localStorage.setItem(BAR_STORE_KEY, JSON.stringify(list)); }catch(e){}
 }
-
+ 
 /* ==========================================================================
    RESTAURANTS (third sidebar chooser, grouped by area)
    ========================================================================== */
 const RESTAURANT_AREAS = ["West End", "Southside", "City Centre", "East End", "North", "Other"];
 const RESTAURANT_STORE_KEY = "shallwe_restaurants_v1";
-
+ 
 const DEFAULT_RESTAURANTS = [
   {id:6, name:"Banh Mi & Tea", area:"West End", location:{lat:55.8709439, lng:-4.3067574, label:"Banh Mi & Tea"}},
   {id:7, name:"Suissi Vegan Kitchen", area:"West End", location:{lat:55.8708693, lng:-4.3134623, label:"Suissi Vegan Kitchen"}},
@@ -250,7 +250,7 @@ const DEFAULT_RESTAURANTS = [
   {id:27, name:"Studio by Modou", area:"West End", location:{lat:55.8391002, lng:-4.2751927, label:"Studio by Modou"}},
   {id:28, name:"Gloriosa", area:"West End", location:{lat:55.8665995, lng:-4.2904739, label:"Gloriosa"}}
 ];
-
+ 
 function loadRestaurants(){
   try{
     const raw = localStorage.getItem(RESTAURANT_STORE_KEY);
@@ -261,7 +261,7 @@ function loadRestaurants(){
 function saveRestaurants(list){
   try{ localStorage.setItem(RESTAURANT_STORE_KEY, JSON.stringify(list)); }catch(e){}
 }
-
+ 
 /* ==========================================================================
    LOCATION SEARCH (geocoding via OpenStreetMap's Nominatim)
    Free, no API key. Please be a good citizen of the free service — we
@@ -269,24 +269,22 @@ function saveRestaurants(list){
    https://operations.osmfoundation.org/policies/nominatim/
    ========================================================================== */
 let lastSearchAt = 0;
-
+ 
 async function searchGlasgowPlace(query){
   const now = Date.now();
-  if(now - lastSearchAt < 1000) return []; // light rate-limit guard
+  if(now - lastSearchAt < 1000) return [];
   lastSearchAt = now;
   const url = `https://nominatim.openstreetmap.org/search?format=json&addressdetails=0&limit=5&viewbox=-4.45,55.93,-4.05,55.78&bounded=1&q=${encodeURIComponent(query)}`;
   const res = await fetch(url);
   if(!res.ok) throw new Error('Search failed');
   return res.json();
 }
-
+ 
 /* ==========================================================================
    PLAYLIST EMBED (Spotify / Apple Music / YouTube)
    ========================================================================== */
 const DEFAULT_PLAYLIST_URL = "https://open.spotify.com/playlist/1aV8q8gGtnZ6V0M9ciq2NK?si=458cbcfc9fa94488";
-
-/** Turns a Spotify web URL into a "spotify:type:id" URI for the iFrame API.
-    Returns null for non-Spotify links. */
+ 
 function parseSpotifyUri(url){
   try{
     const u = new URL(url);
@@ -296,7 +294,7 @@ function parseSpotifyUri(url){
     return `spotify:${m[1]}:${m[2]}`;
   }catch(e){ return null; }
 }
-
+ 
 function playlistEmbedHtml(url){
   try{
     const u = new URL(url);
@@ -321,3 +319,4 @@ function playlistEmbedHtml(url){
     return null;
   }
 }
+ 
