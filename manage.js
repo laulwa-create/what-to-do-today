@@ -272,6 +272,95 @@ document.getElementById('saveCafeBtn').addEventListener('click', ()=>{
 });
 
 /* ==========================================================================
+   BARS
+   ========================================================================== */
+let bars = loadBars();
+let pendingBarLocation = null;
+
+function renderBarAreaChips(){
+  const row = document.getElementById('newBarArea');
+  row.innerHTML = BAR_AREAS.map((a,i)=>
+    `<button class="chip${i===0?' active':''}" data-value="${escapeHtml(a)}">${escapeHtml(a)}</button>`
+  ).join('');
+  row.querySelectorAll('.chip').forEach(chip=>{
+    chip.addEventListener('click', ()=>{
+      row.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+      chip.classList.add('active');
+    });
+  });
+}
+renderBarAreaChips();
+
+function renderBarList(){
+  const listEl = document.getElementById('cafeList');
+  listEl.innerHTML = cafes.map(c=>{
+    const locTag = c.location ? `<span class="tag loc">📍 ${escapeHtml(c.location.label)}</span>` : `<span class="tag">no location yet</span>`;
+    return `<div class="board-card" data-id="${c.id}">
+      <button class="remove-btn" data-remove-cafe="${c.id}" title="remove">✕</button>
+      <div class="name">${escapeHtml(c.name)}</div>
+      <div class="tags"><span class="tag">${escapeHtml(c.area)}</span>${locTag}</div>
+    </div>`;
+  }).join('');
+
+  listEl.querySelectorAll('[data-remove-cafe]').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      const id = Number(btn.dataset.removeCafe);
+      cafes = cafes.filter(c=>c.id !== id);
+      saveCafes(cafes);
+      renderCafeList();
+    });
+  });
+}
+renderCafeList();
+
+document.getElementById('cafeLocationSearchBtn').addEventListener('click', async ()=>{
+  const query = document.getElementById('cafeLocationQuery').value.trim();
+  const resultsEl = document.getElementById('cafeLocationResults');
+  if(!query) return;
+  resultsEl.innerHTML = `<div class="location-result-item">searching…</div>`;
+  try{
+    const results = await searchGlasgowPlace(query);
+    if(!results.length){
+      resultsEl.innerHTML = `<div class="location-result-item">no matches — try a different search</div>`;
+      return;
+    }
+    resultsEl.innerHTML = results.map((r, i)=>
+      `<button type="button" class="location-result-item" data-index="${i}">${escapeHtml(r.display_name)}</button>`
+    ).join('');
+    resultsEl.querySelectorAll('[data-index]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const r = results[Number(btn.dataset.index)];
+        pendingCafeLocation = { lat: parseFloat(r.lat), lng: parseFloat(r.lon), label: r.display_name.split(',')[0] };
+        document.getElementById('cafeLocationSelected').textContent = `📍 selected: ${pendingCafeLocation.label}`;
+        resultsEl.innerHTML = '';
+      });
+    });
+  }catch(e){
+    resultsEl.innerHTML = `<div class="location-result-item">search failed — check your connection and try again</div>`;
+  }
+});
+
+document.getElementById('saveCafeBtn').addEventListener('click', ()=>{
+  const name = document.getElementById('newCafeName').value.trim();
+  if(!name){ document.getElementById('newCafeName').focus(); return; }
+  const area = document.querySelector('#newCafeArea .chip.active').dataset.value;
+  const newId = cafes.length ? Math.max(...cafes.map(c=>c.id))+1 : 1;
+
+  cafes.push({ id:newId, name, area, location: pendingCafeLocation });
+  saveCafes(cafes);
+  renderCafeList();
+
+  document.getElementById('newCafeName').value = '';
+  document.getElementById('cafeLocationQuery').value = '';
+  document.getElementById('cafeLocationResults').innerHTML = '';
+  document.getElementById('cafeLocationSelected').textContent = '';
+  pendingCafeLocation = null;
+  document.querySelectorAll('#newCafeArea .chip').forEach(c=>c.classList.remove('active'));
+  document.querySelector('#newCafeArea .chip').classList.add('active');
+});
+
+/* ==========================================================================
    MUSIC SETUP (playlist only)
    ========================================================================== */
 function renderPlaylistCurrent(){
