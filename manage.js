@@ -292,31 +292,31 @@ function renderBarAreaChips(){
 renderBarAreaChips();
 
 function renderBarList(){
-  const listEl = document.getElementById('cafeList');
-  listEl.innerHTML = cafes.map(c=>{
+  const listEl = document.getElementById('barList');
+  listEl.innerHTML = bars.map(c=>{
     const locTag = c.location ? `<span class="tag loc">📍 ${escapeHtml(c.location.label)}</span>` : `<span class="tag">no location yet</span>`;
     return `<div class="board-card" data-id="${c.id}">
-      <button class="remove-btn" data-remove-cafe="${c.id}" title="remove">✕</button>
+      <button class="remove-btn" data-remove-bar="${c.id}" title="remove">✕</button>
       <div class="name">${escapeHtml(c.name)}</div>
       <div class="tags"><span class="tag">${escapeHtml(c.area)}</span>${locTag}</div>
     </div>`;
   }).join('');
 
-  listEl.querySelectorAll('[data-remove-cafe]').forEach(btn=>{
+  listEl.querySelectorAll('[data-remove-bar]').forEach(btn=>{
     btn.addEventListener('click', (e)=>{
       e.stopPropagation();
-      const id = Number(btn.dataset.removeCafe);
-      cafes = cafes.filter(c=>c.id !== id);
-      saveCafes(cafes);
-      renderCafeList();
+      const id = Number(btn.dataset.removeBar);
+      bars = bars.filter(c=>c.id !== id);
+      saveBars(bars);
+      renderBarList();
     });
   });
 }
-renderCafeList();
+renderBarList();
 
 document.getElementById('cafeLocationSearchBtn').addEventListener('click', async ()=>{
-  const query = document.getElementById('cafeLocationQuery').value.trim();
-  const resultsEl = document.getElementById('cafeLocationResults');
+  const query = document.getElementById('barLocationQuery').value.trim();
+  const resultsEl = document.getElementById('barLocationResults');
   if(!query) return;
   resultsEl.innerHTML = `<div class="location-result-item">searching…</div>`;
   try{
@@ -331,8 +331,8 @@ document.getElementById('cafeLocationSearchBtn').addEventListener('click', async
     resultsEl.querySelectorAll('[data-index]').forEach(btn=>{
       btn.addEventListener('click', ()=>{
         const r = results[Number(btn.dataset.index)];
-        pendingCafeLocation = { lat: parseFloat(r.lat), lng: parseFloat(r.lon), label: r.display_name.split(',')[0] };
-        document.getElementById('cafeLocationSelected').textContent = `📍 selected: ${pendingCafeLocation.label}`;
+        pendingBarLocation = { lat: parseFloat(r.lat), lng: parseFloat(r.lon), label: r.display_name.split(',')[0] };
+        document.getElementById('barLocationSelected').textContent = `📍 selected: ${pendingBarLocation.label}`;
         resultsEl.innerHTML = '';
       });
     });
@@ -341,23 +341,23 @@ document.getElementById('cafeLocationSearchBtn').addEventListener('click', async
   }
 });
 
-document.getElementById('saveCafeBtn').addEventListener('click', ()=>{
-  const name = document.getElementById('newCafeName').value.trim();
-  if(!name){ document.getElementById('newCafeName').focus(); return; }
-  const area = document.querySelector('#newCafeArea .chip.active').dataset.value;
-  const newId = cafes.length ? Math.max(...cafes.map(c=>c.id))+1 : 1;
+document.getElementById('saveBarBtn').addEventListener('click', ()=>{
+  const name = document.getElementById('newBarName').value.trim();
+  if(!name){ document.getElementById('newBarName').focus(); return; }
+  const area = document.querySelector('#newBarArea .chip.active').dataset.value;
+  const newId = bars.length ? Math.max(...bars.map(c=>c.id))+1 : 1;
 
-  cafes.push({ id:newId, name, area, location: pendingCafeLocation });
-  saveCafes(cafes);
-  renderCafeList();
+  bars.push({ id:newId, name, area, location: pendingBarLocation });
+  saveBars(bars);
+  renderBarList();
 
-  document.getElementById('newCafeName').value = '';
-  document.getElementById('cafeLocationQuery').value = '';
-  document.getElementById('cafeLocationResults').innerHTML = '';
-  document.getElementById('cafeLocationSelected').textContent = '';
-  pendingCafeLocation = null;
-  document.querySelectorAll('#newCafeArea .chip').forEach(c=>c.classList.remove('active'));
-  document.querySelector('#newCafeArea .chip').classList.add('active');
+  document.getElementById('newBarName').value = '';
+  document.getElementById('barLocationQuery').value = '';
+  document.getElementById('barLocationResults').innerHTML = '';
+  document.getElementById('barLocationSelected').textContent = '';
+  pendingBarLocation = null;
+  document.querySelectorAll('#newBarArea .chip').forEach(c=>c.classList.remove('active'));
+  document.querySelector('#newBarArea .chip').classList.add('active');
 });
 
 /* ==========================================================================
