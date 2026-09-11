@@ -136,6 +136,41 @@
     </details>
   </section>
 
+   <!-- ============================================================
+       BARS (sidebar chooser on the main page)
+  ============================================================= -->
+  <section class="card panel">
+    <h2>bars</h2>
+    <p class="hint">these show up grouped by area in the sidebar on the main page.</p>
+    <div class="board-grid" id="barList"></div>
+
+    <details class="add-form" open>
+      <summary>+ add a bar</summary>
+      <div class="form-body">
+        <div class="form-grid">
+          <div class="full">
+            <label class="small">name</label>
+            <input type="text" id="newBarName" placeholder="e.g. Kelvingrove Cafe">
+          </div>
+          <div class="full">
+            <label class="small">area</label>
+            <div class="chip-row purple" id="newBarArea"></div>
+          </div>
+          <div class="full location-box">
+            <label class="small">📍 location</label>
+            <div class="location-search-row">
+              <input type="text" id="barLocationQuery" placeholder="search its location">
+              <button type="button" id="barLocationSearchBtn">find</button>
+            </div>
+            <div id="barLocationResults" class="location-results"></div>
+            <div id="barLocationSelected" class="location-selected"></div>
+          </div>
+        </div>
+        <button class="save-btn" id="saveBarBtn">add bar</button>
+      </div>
+    </details>
+  </section>
+
   <!-- ============================================================
        MUSIC SETUP
   ============================================================= -->
