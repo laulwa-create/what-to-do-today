@@ -15,6 +15,7 @@
   .back-link{ display:inline-block; margin-bottom: 16px; color: var(--green-deep); font-weight: 700; text-decoration: none; font-size: 0.9rem; }
   .back-link:hover{ text-decoration: underline; }
   .current-value{ font-size: 0.82rem; color: var(--text-muted); margin-top: 8px; word-break: break-all; }
+  .export-output{ width: 100%; min-height: 220px; font-family: monospace; font-size: 0.78rem; margin-top: 14px; }
 </style>
 </head>
 <body>
@@ -136,12 +137,12 @@
     </details>
   </section>
 
-   <!-- ============================================================
-       BARS (sidebar chooser on the main page)
+  <!-- ============================================================
+       BARS (second sidebar on the main page)
   ============================================================= -->
   <section class="card panel">
     <h2>bars</h2>
-    <p class="hint">these show up grouped by area in the sidebar on the main page.</p>
+    <p class="hint">these show up grouped by area in the second sidebar on the main page.</p>
     <div class="board-grid" id="barList"></div>
 
     <details class="add-form" open>
@@ -150,7 +151,7 @@
         <div class="form-grid">
           <div class="full">
             <label class="small">name</label>
-            <input type="text" id="newBarName" placeholder="e.g. Kelvingrove Cafe">
+            <input type="text" id="newBarName" placeholder="e.g. Nice N Sleazy">
           </div>
           <div class="full">
             <label class="small">area</label>
@@ -186,6 +187,18 @@
       </div>
       <div id="playlistCurrent" class="current-value"></div>
     </div>
+  </section>
+
+  <!-- ============================================================
+       MAKE IT PERMANENT (export current data as code)
+  ============================================================= -->
+  <section class="card panel">
+    <h2>make it permanent</h2>
+    <p class="hint">everything above only lives in this browser until you do this: click generate, then copy the result into <code>shared.js</code> on GitHub (it replaces the matching <code>const DEFAULT_...</code> lines near the top), and commit. That bakes it into the site for every device — hers, yours, anyone's.</p>
+    <button class="save-btn" id="generateExportBtn">generate code</button>
+    <textarea id="exportOutput" class="export-output" readonly placeholder="click 'generate code' above…"></textarea>
+    <button class="ghost-btn" id="copyExportBtn" style="margin-top:10px;">copy to clipboard</button>
+    <p id="copyStatus" class="mini-hint" style="margin-top:8px;"></p>
   </section>
 
 </div>

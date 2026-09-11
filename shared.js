@@ -81,14 +81,17 @@ function saveCafes(list){
 }
 
 /* ==========================================================================
-   BARS (sidebar chooser, grouped by area)
+   BARS (second sidebar chooser, grouped by area)
    ========================================================================== */
 const BAR_AREAS = ["West End", "Southside", "City Centre", "East End", "North", "Other"];
 const BAR_STORE_KEY = "shallwe_bars_v1";
 
-// A small starter list — add the rest (and their locations) via manage.html.
 const DEFAULT_BARS = [
-  {id:1, name:"Tapa Coffee", area:"West End", location:null},
+  {id:1, name:"The Aragon", area:"West End", location:null},
+  {id:2, name:"Ubiquitous Chip", area:"West End", location:null},
+  {id:3, name:"The Waverley Tea Room", area:"Southside", location:null},
+  {id:4, name:"Nice N Sleazy", area:"City Centre", location:null},
+  {id:5, name:"The Pot Still", area:"City Centre", location:null}
 ];
 
 function loadBars(){

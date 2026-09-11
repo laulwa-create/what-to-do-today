@@ -272,7 +272,7 @@ document.getElementById('saveCafeBtn').addEventListener('click', ()=>{
 });
 
 /* ==========================================================================
-   BARS
+   BARS (same pattern as cafes)
    ========================================================================== */
 let bars = loadBars();
 let pendingBarLocation = null;
@@ -293,12 +293,12 @@ renderBarAreaChips();
 
 function renderBarList(){
   const listEl = document.getElementById('barList');
-  listEl.innerHTML = bars.map(c=>{
-    const locTag = c.location ? `<span class="tag loc">📍 ${escapeHtml(c.location.label)}</span>` : `<span class="tag">no location yet</span>`;
-    return `<div class="board-card" data-id="${c.id}">
-      <button class="remove-btn" data-remove-bar="${c.id}" title="remove">✕</button>
-      <div class="name">${escapeHtml(c.name)}</div>
-      <div class="tags"><span class="tag">${escapeHtml(c.area)}</span>${locTag}</div>
+  listEl.innerHTML = bars.map(b=>{
+    const locTag = b.location ? `<span class="tag loc">📍 ${escapeHtml(b.location.label)}</span>` : `<span class="tag">no location yet</span>`;
+    return `<div class="board-card" data-id="${b.id}">
+      <button class="remove-btn" data-remove-bar="${b.id}" title="remove">✕</button>
+      <div class="name">${escapeHtml(b.name)}</div>
+      <div class="tags"><span class="tag">${escapeHtml(b.area)}</span>${locTag}</div>
     </div>`;
   }).join('');
 
@@ -306,7 +306,7 @@ function renderBarList(){
     btn.addEventListener('click', (e)=>{
       e.stopPropagation();
       const id = Number(btn.dataset.removeBar);
-      bars = bars.filter(c=>c.id !== id);
+      bars = bars.filter(b=>b.id !== id);
       saveBars(bars);
       renderBarList();
     });
@@ -314,7 +314,7 @@ function renderBarList(){
 }
 renderBarList();
 
-document.getElementById('cafeLocationSearchBtn').addEventListener('click', async ()=>{
+document.getElementById('barLocationSearchBtn').addEventListener('click', async ()=>{
   const query = document.getElementById('barLocationQuery').value.trim();
   const resultsEl = document.getElementById('barLocationResults');
   if(!query) return;
@@ -345,7 +345,7 @@ document.getElementById('saveBarBtn').addEventListener('click', ()=>{
   const name = document.getElementById('newBarName').value.trim();
   if(!name){ document.getElementById('newBarName').focus(); return; }
   const area = document.querySelector('#newBarArea .chip.active').dataset.value;
-  const newId = bars.length ? Math.max(...bars.map(c=>c.id))+1 : 1;
+  const newId = bars.length ? Math.max(...bars.map(b=>b.id))+1 : 1;
 
   bars.push({ id:newId, name, area, location: pendingBarLocation });
   saveBars(bars);
@@ -386,3 +386,41 @@ document.getElementById('savePlaylistBtn').addEventListener('click', ()=>{
   renderPlaylistCurrent();
 });
 renderPlaylistCurrent();
+
+/* ==========================================================================
+   MAKE IT PERMANENT — export everything in this browser as ready-to-paste
+   shared.js code, so it works the same on every device once committed.
+   ========================================================================== */
+document.getElementById('generateExportBtn').addEventListener('click', ()=>{
+  let currentPlaylist = null;
+  try{ currentPlaylist = localStorage.getItem(PLAYLIST_KEY); }catch(e){}
+  const playlistToExport = currentPlaylist || DEFAULT_PLAYLIST_URL || "";
+
+  const code = [
+    '// ---- paste each block below over the matching const in shared.js ----',
+    '',
+    `const DEFAULT_ACTIVITIES = ${JSON.stringify(activities, null, 2)};`,
+    '',
+    `const DEFAULT_CAFES = ${JSON.stringify(cafes, null, 2)};`,
+    '',
+    `const DEFAULT_BARS = ${JSON.stringify(bars, null, 2)};`,
+    '',
+    `const DEFAULT_PLAYLIST_URL = ${JSON.stringify(playlistToExport)};`
+  ].join('\n');
+
+  document.getElementById('exportOutput').value = code;
+  document.getElementById('copyStatus').textContent = '';
+});
+
+document.getElementById('copyExportBtn').addEventListener('click', async ()=>{
+  const textarea = document.getElementById('exportOutput');
+  const status = document.getElementById('copyStatus');
+  if(!textarea.value){ status.textContent = 'nothing to copy yet — click "generate code" first.'; return; }
+  try{
+    await navigator.clipboard.writeText(textarea.value);
+    status.textContent = 'copied! now paste it into shared.js on GitHub.';
+  }catch(e){
+    textarea.select();
+    status.textContent = 'couldn\'t auto-copy — the text is selected, so Ctrl+C / Cmd+C should work.';
+  }
+});

@@ -267,6 +267,36 @@ textarea{ resize: vertical; min-height: 56px; }
 }
 .cafe-item:hover{ border-color: var(--green); background: var(--green-soft); }
 
+/* bar sidebar mirrors the cafe sidebar, but on the left edge */
+.bar-toggle{
+  position: fixed;
+  top: 50%;
+  left: 0;
+  z-index: 45;
+  background: var(--green);
+  color: #fff;
+  border: none;
+  padding: 12px 10px;
+  border-radius: 0 12px 12px 0;
+  font-weight: 700;
+  font-size: 0.82rem;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: translateY(-50%) rotate(180deg);
+  box-shadow: 4px 0 12px rgba(90,110,90,0.15);
+}
+.bar-toggle:hover{ background: var(--green-deep); }
+
+.bar-sidebar{
+  left: 0;
+  right: auto;
+  border-left: none;
+  border-right: 1px solid var(--border);
+  box-shadow: 8px 0 24px rgba(90,110,90,0.15);
+  transform: translateX(-100%);
+}
+.bar-sidebar.open{ transform: translateX(0); }
+
 /* ---------- floating now-playing widget ---------- */
 .floating-player{
   position: fixed;
