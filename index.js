@@ -194,6 +194,44 @@ document.getElementById('cafeSidebarToggle').addEventListener('click', ()=> cafe
 document.getElementById('cafeSidebarClose').addEventListener('click', ()=> cafeSidebar.classList.remove('open'));
 
 /* ==========================================================================
+   BAR SIDEBAR
+   ========================================================================== */
+let bars = loadBars();
+
+function renderBarSidebar(){
+  const container = document.getElementById('barGroups');
+  const groups = {};
+  bars.forEach(c=>{
+    if(!groups[c.area]) groups[c.area] = [];
+    groups[c.area].push(c);
+  });
+
+  if(bars.length === 0){
+    container.innerHTML = `<p class="playlist-empty">no bars pinned yet — add some from the manage page.</p>`;
+    return;
+  }
+
+  container.innerHTML = BAR_AREAS.filter(a=>groups[a] && groups[a].length).map(area=>`
+    <div class="bar-group">
+      <div class="bar-group-title">${escapeHtml(area)}</div>
+      ${groups[area].map(c=>`<button class="bar-item" data-cafe="${c.id}">${escapeHtml(c.name)}</button>`).join('')}
+    </div>
+  `).join('');
+
+  container.querySelectorAll('[data-bar]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const c = bars.find(x=>x.id === Number(btn.dataset.bar));
+      if(c && c.location){ highlightLocation(c.location); }
+    });
+  });
+}
+renderCafeSidebar();
+
+const barSidebar = document.getElementById('barSidebar');
+document.getElementById('barSidebarToggle').addEventListener('click', ()=> barSidebar.classList.add('open'));
+document.getElementById('barSidebarClose').addEventListener('click', ()=> barSidebar.classList.remove('open'));
+
+/* ==========================================================================
    MUSIC
    The playlist embed (if any) shows in the "a little music for it" panel.
    A floating button gives quick play/pause access without scrolling.
